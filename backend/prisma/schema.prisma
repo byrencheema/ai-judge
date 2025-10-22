@@ -1,0 +1,78 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Submission {
+  id              String       @id
+  queueId         String
+  labelingTaskId  String
+  createdAt       DateTime
+  answers         Answer[]
+  evaluations     Evaluation[]
+}
+
+model Question {
+  id           String        @id
+  questionType String
+  questionText String
+  answers      Answer[]
+  assignments  Assignment[]
+  evaluations  Evaluation[]
+}
+
+model Answer {
+  id           Int       @id @default(autoincrement())
+  submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  submissionId String
+  question     Question   @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  questionId   String
+  choice       String?
+  reasoning    String?
+  text         String?
+  createdAt    DateTime  @default(now())
+
+  @@unique([submissionId, questionId])
+}
+
+model Judge {
+  id          Int          @id @default(autoincrement())
+  name        String
+  prompt      String
+  model       String
+  active      Boolean      @default(true)
+  assignments Assignment[]
+  evaluations Evaluation[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Assignment {
+  id         Int      @id @default(autoincrement())
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  questionId String
+  judge      Judge    @relation(fields: [judgeId], references: [id], onDelete: Cascade)
+  judgeId    Int
+  createdAt  DateTime @default(now())
+
+  @@unique([questionId, judgeId])
+}
+
+model Evaluation {
+  id           Int        @id @default(autoincrement())
+  submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  submissionId String
+  question     Question   @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  questionId   String
+  judge        Judge      @relation(fields: [judgeId], references: [id], onDelete: Cascade)
+  judgeId      Int
+  verdict      String?
+  reasoning    String?
+  status       String      @default("completed")
+  error        String?
+  createdAt    DateTime    @default(now())
+}

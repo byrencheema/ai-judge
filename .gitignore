@@ -1,0 +1,13 @@
+node_modules
+npm-debug.log*
+frontend/node_modules
+backend/node_modules
+backend/prisma/dev.db*
+.env
+.DS_Store
+.vscode
+*.log
+coverage
+/dist
+/frontend/dist
+/backend/dist
