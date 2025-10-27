@@ -1,12 +1,11 @@
 import { NavLink } from "react-router-dom";
 import { clsx } from "clsx";
-import { Upload, Users, Workflow, Play, ListChecks } from "lucide-react";
+import { Upload, Users, Workflow, ListChecks } from "lucide-react";
 
 const links = [
   { to: "/", label: "Upload", icon: Upload },
   { to: "/judges", label: "Judges", icon: Users },
-  { to: "/assign", label: "Assign", icon: Workflow },
-  { to: "/run", label: "Run", icon: Play },
+  { to: "/workflow", label: "Workflow", icon: Workflow },
   { to: "/results", label: "Results", icon: ListChecks }
 ];
 

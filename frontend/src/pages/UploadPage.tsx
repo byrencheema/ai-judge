@@ -22,6 +22,7 @@ const UploadPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
 
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     setError(null);
@@ -30,8 +31,11 @@ const UploadPage = () => {
 
     if (!file) {
       setPreview(null);
+      setSelectedFileName(null);
       return;
     }
+
+    setSelectedFileName(file.name);
 
     try {
       const text = await file.text();
@@ -40,6 +44,7 @@ const UploadPage = () => {
     } catch (parseError) {
       console.error(parseError);
       setError("Unable to parse file. Please ensure it matches the expected JSON format.");
+      setSelectedFileName(null);
     }
   };
 
@@ -68,14 +73,28 @@ const UploadPage = () => {
         <p className="text-sm text-zinc-400 mt-2">Import JSON data to seed the evaluation queue.</p>
       </header>
 
-      <div className="border border-slate/60 border-dashed rounded-lg p-10 text-center bg-panel/40">
-        <input
-          type="file"
-          accept="application/json"
-          onChange={handleFileChange}
-          className="block mx-auto"
-        />
-        <p className="mt-4 text-sm text-zinc-400">Drop a JSON file exported from the annotation platform.</p>
+      <div className="border border-slate/60 border-dashed rounded-none p-10 text-center bg-panel/40">
+        <div className="flex flex-col items-center gap-3">
+          <label
+            htmlFor="file-upload"
+            className="px-6 py-3 bg-accent hover:bg-accent/80 text-black rounded-none font-mono uppercase tracking-wider cursor-pointer transition-all"
+          >
+            Choose File
+          </label>
+          <input
+            id="file-upload"
+            type="file"
+            accept="application/json"
+            onChange={handleFileChange}
+            className="hidden"
+          />
+          <p className="text-sm text-zinc-400 font-mono">
+            {selectedFileName || "No file chosen"}
+          </p>
+          <p className="text-sm text-zinc-500 mt-2">
+            Drop a JSON file exported from the annotation platform.
+          </p>
+        </div>
       </div>
 
       {error && <div className="rounded bg-red-500/10 border border-red-500/40 p-4 text-sm text-red-300">{error}</div>}
@@ -88,12 +107,12 @@ const UploadPage = () => {
             <button
               onClick={handleUpload}
               disabled={isUploading}
-              className="px-4 py-2 bg-accent/80 hover:bg-accent text-black rounded-md disabled:opacity-50"
+              className="px-4 py-2 bg-accent hover:bg-accent/80 text-black rounded-none font-mono uppercase tracking-wider disabled:opacity-50 transition-all"
             >
               {isUploading ? "Importing..." : "Save to database"}
             </button>
           </div>
-          <div className="overflow-hidden border border-slate/60 rounded-lg">
+          <div className="overflow-hidden border border-slate/60 rounded-none">
             <table className="min-w-full text-sm">
               <thead className="bg-panel/80 text-zinc-400">
                 <tr>

@@ -10,10 +10,33 @@ interface JudgeFormValues {
   active: boolean;
 }
 
+const OPENAI_MODELS = [
+  {
+    value: "gpt-5",
+    label: "GPT-5"
+  },
+  {
+    value: "gpt-5-mini",
+    label: "GPT-5 mini"
+  },
+  {
+    value: "gpt-5-nano",
+    label: "GPT-5 nano"
+  },
+  {
+    value: "gpt-4o",
+    label: "GPT-4o"
+  },
+  {
+    value: "gpt-4o-mini",
+    label: "GPT-4o mini"
+  }
+];
+
 const defaultValues: JudgeFormValues = {
   name: "",
   prompt: "",
-  model: "gpt-4o-mini",
+  model: "gpt-5-mini",
   active: true
 };
 
@@ -60,30 +83,35 @@ const JudgesPage = () => {
         <p className="text-sm text-zinc-400 mt-2">Define prompts, select models, and toggle availability.</p>
       </header>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 gap-6 bg-panel/40 border border-slate/60 rounded-lg p-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 gap-6 bg-panel/40 border border-slate/60 rounded-sm p-6">
         <div>
           <label className="block text-sm text-zinc-400 mb-1">Name</label>
           <input
             {...register("name", { required: true })}
-            className="w-full bg-background border border-slate/60 rounded px-3 py-2"
-            placeholder="GPT-4 rubric judge"
+            className="w-full bg-background border border-slate/60 rounded-none px-3 py-2 font-mono"
+            placeholder="e.g., Strict Accuracy Judge"
           />
         </div>
         <div>
           <label className="block text-sm text-zinc-400 mb-1">Model</label>
-          <input
+          <select
             {...register("model", { required: true })}
-            className="w-full bg-background border border-slate/60 rounded px-3 py-2"
-            placeholder="gpt-4o-mini"
-          />
+            className="w-full bg-background border border-slate/60 rounded-none px-3 py-2 font-mono"
+          >
+            {OPENAI_MODELS.map((model) => (
+              <option key={model.value} value={model.value}>
+                {model.label}
+              </option>
+            ))}
+          </select>
         </div>
         <div>
           <label className="block text-sm text-zinc-400 mb-1">Prompt / rubric</label>
           <textarea
             {...register("prompt", { required: true })}
             rows={5}
-            className="w-full bg-background border border-slate/60 rounded px-3 py-2"
-            placeholder="Explain how to grade the response"
+            className="w-full bg-background border border-slate/60 rounded-none px-3 py-2 font-mono text-sm"
+            placeholder="e.g., Evaluate the answer for factual accuracy. Pass if the answer is scientifically correct and well-reasoned. Fail if it contains false information or poor reasoning."
           />
         </div>
         <div className="flex items-center gap-3">
@@ -92,7 +120,7 @@ const JudgesPage = () => {
         </div>
         <button
           type="submit"
-          className="justify-self-start px-4 py-2 bg-accent/80 hover:bg-accent text-black rounded-md"
+          className="justify-self-start px-4 py-2 bg-accent hover:bg-accent/80 text-black rounded-none font-mono uppercase tracking-wider transition-all"
           disabled={createMutation.isPending}
         >
           {createMutation.isPending ? "Saving..." : "Create judge"}
@@ -109,7 +137,7 @@ const JudgesPage = () => {
         {error && <p className="text-sm text-red-400">Failed to load judges.</p>}
         {judges && judges.length === 0 && <p className="text-sm text-zinc-500">No judges created yet.</p>}
         {judges && judges.length > 0 && (
-          <div className="overflow-hidden border border-slate/60 rounded-lg">
+          <div className="overflow-hidden border border-slate/60 rounded-none">
             <table className="min-w-full text-sm">
               <thead className="bg-panel/80 text-zinc-400">
                 <tr>

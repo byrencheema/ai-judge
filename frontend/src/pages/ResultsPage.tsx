@@ -62,9 +62,9 @@ const ResultsPage = () => {
         </p>
       </header>
 
-      <div className="grid md:grid-cols-3 gap-6 bg-panel/40 border border-slate/60 rounded-lg p-6 text-sm">
+      <div className="grid md:grid-cols-3 gap-6 bg-panel/40 border border-slate/60 rounded-none p-6 text-sm">
         <div>
-          <h3 className="text-xs uppercase text-zinc-500 mb-2">Judges</h3>
+          <h3 className="text-xs uppercase text-zinc-500 mb-2 font-mono tracking-wider">Judges</h3>
           <div className="space-y-2 max-h-40 overflow-y-auto pr-2">
             {judges?.map((judge) => (
               <label key={judge.id} className="flex items-center gap-2">
@@ -81,7 +81,7 @@ const ResultsPage = () => {
           </div>
         </div>
         <div>
-          <h3 className="text-xs uppercase text-zinc-500 mb-2">Questions</h3>
+          <h3 className="text-xs uppercase text-zinc-500 mb-2 font-mono tracking-wider">Questions</h3>
           <div className="space-y-2 max-h-40 overflow-y-auto pr-2">
             {questions?.map((question) => (
               <label key={question.id} className="flex items-center gap-2">
@@ -100,7 +100,7 @@ const ResultsPage = () => {
           </div>
         </div>
         <div>
-          <h3 className="text-xs uppercase text-zinc-500 mb-2">Verdicts</h3>
+          <h3 className="text-xs uppercase text-zinc-500 mb-2 font-mono tracking-wider">Verdicts</h3>
           <div className="space-y-2">
             {["pass", "fail", "inconclusive"].map((verdict) => (
               <label key={verdict} className="flex items-center gap-2">
@@ -118,15 +118,16 @@ const ResultsPage = () => {
       </div>
 
       {passRate && (
-        <div className="border border-slate/60 rounded-lg p-4 bg-panel/40 text-sm">
-          <p>
-            Pass rate: <span className="text-green-400 font-semibold">{passRate.percent}%</span> (
-            {passRate.passed} / {passRate.total} evaluations)
+        <div className="border border-slate/60 rounded-none p-4 bg-panel/40 text-sm">
+          <p className="font-mono">
+            <span className="text-zinc-500 uppercase tracking-wider text-xs">Pass rate:</span>{" "}
+            <span className="text-green-400 font-bold text-lg">{passRate.percent}%</span>{" "}
+            <span className="text-zinc-500">({passRate.passed} / {passRate.total} evaluations)</span>
           </p>
         </div>
       )}
 
-      <div className="border border-slate/60 rounded-lg overflow-hidden">
+      <div className="border border-slate/60 rounded-none overflow-hidden">
         <table className="min-w-full text-sm">
           <thead className="bg-panel/80 text-zinc-400">
             <tr>
@@ -162,12 +163,12 @@ const ResultsPage = () => {
                 <td className="px-4 py-3">{evaluation.judge.name}</td>
                 <td className="px-4 py-3">
                   <span
-                    className={`px-2 py-1 rounded text-xs uppercase tracking-wide ${
+                    className={`px-2 py-1 rounded-none text-xs font-mono uppercase tracking-wider border ${
                       evaluation.verdict === "pass"
-                        ? "bg-green-500/10 text-green-400"
+                        ? "bg-green-500/10 text-green-400 border-green-500/30"
                         : evaluation.verdict === "fail"
-                        ? "bg-red-500/10 text-red-400"
-                        : "bg-yellow-500/10 text-yellow-300"
+                        ? "bg-red-500/10 text-red-400 border-red-500/30"
+                        : "bg-yellow-500/10 text-yellow-300 border-yellow-500/30"
                     }`}
                   >
                     {evaluation.verdict ?? "error"}

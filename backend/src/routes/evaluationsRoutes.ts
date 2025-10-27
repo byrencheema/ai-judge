@@ -56,6 +56,11 @@ router.get("/evaluations", async (req, res) => {
   res.json(evaluations);
 });
 
+router.delete("/evaluations", async (_req, res) => {
+  const result = await prisma.evaluation.deleteMany({});
+  res.json({ message: `Deleted ${result.count} evaluations` });
+});
+
 router.post("/evaluate", async (req, res) => {
   const parseResult = EvaluateSchema.safeParse(req.body ?? {});
 
@@ -128,10 +133,26 @@ router.post("/evaluate", async (req, res) => {
 
         const task = (async () => {
           try {
+            // Format answer based on question type
+            let answerText = "(no answer provided)";
+
+            if (question.questionType === "single_choice_with_reasoning") {
+              // For single_choice_with_reasoning, combine choice and reasoning
+              if (answer.choice && answer.reasoning) {
+                answerText = `${answer.choice} - ${answer.reasoning}`;
+              } else if (answer.choice) {
+                answerText = answer.choice;
+              } else if (answer.reasoning) {
+                answerText = answer.reasoning;
+              }
+            } else {
+              // For other question types, use text, reasoning, or choice in order
+              answerText = answer.text ?? answer.reasoning ?? answer.choice ?? "(no answer provided)";
+            }
+
             const prompt = buildJudgePrompt({
               questionText: question.questionText,
-              answer:
-                answer.text ?? answer.reasoning ?? answer.choice ?? "(no answer provided)",
+              answer: answerText,
               judgePrompt: judge.prompt
             });
 
@@ -196,11 +217,24 @@ router.post("/evaluate", async (req, res) => {
 
   await Promise.allSettled(tasks);
 
+  // Fetch all created evaluations to return their verdicts
+  const evaluations = await prisma.evaluation.findMany({
+    where: {
+      id: { in: evaluationsCreated }
+    },
+    select: {
+      id: true,
+      verdict: true,
+      status: true
+    }
+  });
+
   res.json({
     planned,
     completed,
     failed,
-    createdEvaluationIds: evaluationsCreated
+    createdEvaluationIds: evaluationsCreated,
+    evaluations
   });
 });
 
